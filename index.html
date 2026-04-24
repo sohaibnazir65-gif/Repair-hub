@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="APNA_GOOGLE_CODE_YAHAN_DAALEN" />
+    <title>RepairHub - Fix Anything, Save Everything</title>
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- DUMMY DATA FOR HOMEPAGE ---
+        const categories = [
+            { label: "Laptops", count: "1,240+ Guides", color: "text-blue-600", bg: "bg-blue-50" },
+            { label: "Mobiles", count: "2,890+ Guides", color: "text-sky-600", bg: "bg-sky-50" },
+            { label: "AC Units", count: "380+ Guides", color: "text-cyan-600", bg: "bg-cyan-50" }
+        ];
+
+        // --- APNA ASLI MAWAD (JSON) YAHAN HAI ---
+        // Note: Images ke shuru mein './' lagaya hai
+        const guidesData = [
+            {
+                "id": 1,
+                "title": "How to Upgrade RAM in a Desktop PC",
+                "device": "Desktop PC",
+                "difficulty": "Easy",
+                "time": "15–25 min",
+                "tools": ["Phillips #2 Screwdriver", "Anti-Static Wrist Strap"],
+                "steps": [
+                    { "stepNumber": 1, "heading": "Power Down", "instruction": "Completely shut down the PC.", "imagePlaceholder": "./images/guide1_step1.jpg" },
+                    { "stepNumber": 4, "heading": "Locate RAM Slots", "instruction": "Find the RAM slots on the motherboard.", "imagePlaceholder": "./images/guide1_step4.jpg" },
+                    { "stepNumber": 5, "heading": "Remove Old RAM", "instruction": "Press retention clips.", "imagePlaceholder": "./images/guide1_step5.jpg" },
+                    { "stepNumber": 7, "heading": "Seat New RAM", "instruction": "Press firmly until it clicks.", "imagePlaceholder": "./images/guide1_step7.jpg" }
+                ],
+                "caution": "Never touch gold pins. Wear anti-static strap."
+            },
+            {
+                "id": 2,
+                "title": "How to Replace a Power Supply Unit",
+                "device": "Desktop PC",
+                "difficulty": "Moderate",
+                "time": "40–60 min",
+                "tools": ["Screwdriver", "Cable Ties"],
+                "steps": [
+                    { "stepNumber": 1, "heading": "Remove Old PSU", "instruction": "Unscrew and remove the unit.", "imagePlaceholder": "./images/guide2_cover.jpg" }
+                ],
+                "caution": "PSU capacitors can hold lethal voltage."
+            }
+        ];
+
+        const AdSlot = ({ label, className = "" }) => (
+            <div className={`bg-slate-100 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center text-slate-400 text-xs font-mono tracking-widest uppercase ${className}`}>
+                <span>{label}</span>
+                <span className="text-[10px] mt-0.5 opacity-60">Advertisement</span>
+            </div>
+        );
+
+        function RepairHub() {
+            const [selectedGuide, setSelectedGuide] = useState(null);
+            const [showPrivacy, setShowPrivacy] = useState(false);
+
+            // Re-render Lucide icons when component updates
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            });
+
+            // DETAIL PAGE VIEW
+            if (selectedGuide) {
+                return (
+                    <div className="min-h-screen bg-white">
+                        <nav className="border-b sticky top-0 bg-white/95 backdrop-blur z-50 p-4">
+                            <div className="max-w-4xl mx-auto flex justify-between items-center">
+                                <button onClick={() => setSelectedGuide(null)} className="text-blue-600 font-bold flex items-center gap-2">
+                                    <i data-lucide="arrow-left" className="w-5 h-5"></i> Back to Home
+                                </button>
+                                <button onClick={() => setShowPrivacy(true)} className="text-xs text-slate-500 underline">Privacy Policy</button>
+                            </div>
+                        </nav>
+
+                        <div className="max-w-4xl mx-auto p-4 md:p-8">
+                            <h1 className="text-3xl md:text-5xl font-black mb-6">{selectedGuide.title}</h1>
+                            
+                            <div className="flex gap-4 mb-8">
+                                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-bold">{selectedGuide.difficulty}</span>
+                                <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                                    <i data-lucide="clock" className="w-4 h-4"></i> {selectedGuide.time}
+                                </span>
+                            </div>
+
+                            <div className="mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                                <h3 className="font-bold text-lg mb-3 flex items-center gap-2"><i data-lucide="zap" className="text-blue-600"></i> Tools Needed</h3>
+                                <ul className="list-disc pl-5 text-slate-600">
+                                    {selectedGuide.tools.map((t, i) => <li key={i}>{t}</li>)}
+                                </ul>
+                            </div>
+
+                            <div className="space-y-12">
+                                {selectedGuide.steps.map(s => (
+                                    <div key={s.stepNumber} className="border-l-4 border-blue-600 pl-6">
+                                        <h3 className="text-2xl font-bold mb-3">Step {s.stepNumber}: {s.heading}</h3>
+                                        <p className="text-slate-600 mb-4 text-lg">{s.instruction}</p>
+                                        <img src={s.imagePlaceholder} alt={s.heading} className="rounded-2xl shadow-lg w-full max-h-96 object-cover bg-slate-100" />
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-12 p-6 bg-rose-50 border border-rose-200 rounded-2xl">
+                                <h4 className="font-bold text-rose-800 text-lg flex items-center gap-2">
+                                    <i data-lucide="alert-triangle"></i> Safety Warning
+                                </h4>
+                                <p className="text-rose-700 mt-2">{selectedGuide.caution}</p>
+                            </div>
+                        </div>
+                        {/* Privacy Modal */}
+                        {showPrivacy && (
+                            <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[100]">
+                                <div className="bg-white p-8 rounded-3xl max-w-lg w-full">
+                                    <h2 className="text-2xl font-bold mb-4">Privacy Policy</h2>
+                                    <p className="text-slate-600 mb-6">RepairHub uses Google Ads and basic cookies to keep the site free. We do not collect or sell personal hardware data.</p>
+                                    <button onClick={() => setShowPrivacy(false)} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Close</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
+            // MAIN HOME PAGE VIEW (THE BIG DESIGN)
+            return (
+                <div className="min-h-screen bg-slate-50 font-sans">
+                    {/* Navbar */}
+                    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+                        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center"><i data-lucide="wrench" className="text-white w-5 h-5"></i></div>
+                                <span className="text-xl font-black">Repair<span className="text-blue-600">Hub</span></span>
+                            </div>
+                            <button onClick={() => setShowPrivacy(true)} className="text-sm font-semibold text-slate-500 hover:text-blue-600">Privacy Policy</button>
+                        </div>
+                    </nav>
+
+                    {/* Top Ad */}
+                    <div className="max-w-7xl mx-auto px-4 pt-4">
+                        <AdSlot label="Top Banner Ad (728x90)" className="h-16 w-full" />
+                    </div>
+
+                    {/* Hero Section */}
+                    <section className="bg-gradient-to-br from-blue-700 to-blue-900 text-white mt-4 mx-4 rounded-3xl overflow-hidden">
+                        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+                            <h1 className="text-4xl md:text-6xl font-black mb-4">Fix Anything.<br/><span className="text-blue-200">Save Everything.</span></h1>
+                            <p className="text-xl text-blue-100 mb-8">Professional repair guides. No experience needed.</p>
+                            <div className="bg-white rounded-full flex p-2 max-w-lg mx-auto shadow-2xl">
+                                <input type="text" placeholder="Search e.g. iPhone Battery..." className="flex-1 px-4 outline-none text-slate-800" />
+                                <button className="bg-blue-600 text-white px-6 py-3 rounded-full font-bold">Search</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Main Content Area */}
+                    <main className="max-w-7xl mx-auto px-4 py-12 flex gap-8">
+                        <div className="flex-1">
+                            {/* Categories */}
+                            <div className="mb-12">
+                                <h2 className="text-2xl font-bold mb-6">Categories</h2>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {categories.map(c => (
+                                        <div key={c.label} className={`p-4 rounded-2xl border-2 border-slate-100 ${c.bg} text-center cursor-pointer hover:-translate-y-1 transition-transform`}>
+                                            <span className={`font-bold ${c.color}`}>{c.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <AdSlot label="In-Content Ad (728x90)" className="h-20 w-full mb-12" />
+
+                            {/* Guides Grid */}
+                            <div>
+                                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2"><i data-lucide="trending-up" className="text-blue-600"></i> Trending Guides</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {guidesData.map(g => (
+                                        <div key={g.id} className="bg-white border border-slate-200 rounded-3xl overflow-hidden hover:shadow-xl transition-all">
+                                            <div className="h-40 bg-slate-800 relative">
+                                                <img src={g.steps[0].imagePlaceholder} className="w-full h-full object-cover opacity-80" />
+                                                <span className="absolute top-3 right-3 bg-white px-2 py-1 rounded-full text-xs font-bold text-slate-800">{g.difficulty}</span>
+                                            </div>
+                                            <div className="p-5">
+                                                <h3 className="font-bold text-lg mb-2">{g.title}</h3>
+                                                <p className="text-xs text-slate-500 mb-4">{g.time} • {g.tools.length} Tools Needed</p>
+                                                <button onClick={() => setSelectedGuide(g)} className="w-full py-2 bg-blue-50 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-colors">
+                                                    Start Guide
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sidebar */}
+                        <aside className="hidden lg:block w-72">
+                            <AdSlot label="Sidebar Ad (300x250)" className="h-64 w-full mb-6" />
+                            <div className="bg-slate-900 text-white p-6 rounded-3xl">
+                                <h3 className="font-bold mb-2">Want to earn?</h3>
+                                <p className="text-sm text-slate-400 mb-4">Submit your own repair guides and join the community.</p>
+                                <button className="w-full bg-white text-slate-900 font-bold py-2 rounded-xl">Contribute</button>
+                            </div>
+                        </aside>
+                    </main>
+
+                    {/* Privacy Modal */}
+                    {showPrivacy && (
+                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[100]">
+                            <div className="bg-white p-8 rounded-3xl max-w-lg w-full">
+                                <h2 className="text-2xl font-bold mb-4">Privacy Policy</h2>
+                                <p className="text-slate-600 mb-6">RepairHub uses Google Ads and basic cookies to keep the site free. We do not collect or sell personal hardware data.</p>
+                                <button onClick={() => setShowPrivacy(false)} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Close</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<RepairHub />);
+    </script>
+</body>
+</html>
